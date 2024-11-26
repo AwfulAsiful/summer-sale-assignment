@@ -7,6 +7,7 @@ const couponCodeInpt = document.getElementById('coupon-code');
 const apply = document.getElementById('apply');
 
 let coupon = '';
+let total = 0, discount = 0, grand = 0;
 const createListItem = (name) => {
     const li = document.createElement('li');
     li.innerText = name;
@@ -14,34 +15,40 @@ const createListItem = (name) => {
     ol.appendChild(li);
 };
 
-apply.addEventListener('click', () => {
-    coupon = couponCodeInpt.value;
-});
 
-let total = 0, discount = 0, grand = 0;
+
+
 
 const calculation = (price, haveCoupon) => {
+
     price = parseFloat(price);
     discount = parseFloat(discount);
     total = parseFloat(total);
-
+    if (haveCoupon) discount += (total * 0.2);
     total += price;
-    if (haveCoupon) discount += price * 0.2;
+    discount = discount.toFixed(2);
     grand = total - discount;
 
-    discount = discount.toFixed(2);
+
     totalPrice.innerText = total.toFixed(2);
     discountAmount.innerText = discount;
     grandTotal.innerText = grand.toFixed(2);
 };
 
 items.addEventListener('click', (e) => {
-    const card = e.target.closest('.card'); // Get the clicked card
-    if (!card) return;
+    const card = e.target.closest('.card');
+    if (card) {
+        const name = card.querySelector('.name').innerText;
+        const price = card.querySelector('.price').innerText;
 
-    const name = card.querySelector('.name').innerText; // Get the name of the clicked product
-    const price = card.querySelector('.price').innerText.replace(' TK', ''); // Get the price and remove " TK"
-    
-    createListItem(name);
-    calculation(price, coupon !== '');
+        createListItem(name);
+        apply.addEventListener('click', () => {
+            coupon = couponCodeInpt.value;
+            if (coupon.toUpperCase() === 'SELL20')
+                calculation(price, true);
+
+        });
+        calculation(price, false)
+    }
+    else return;
 });
