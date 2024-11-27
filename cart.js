@@ -7,7 +7,28 @@ const couponCodeInpt = document.getElementById('coupon-code');
 const apply = document.getElementById('apply');
 
 let coupon = '';
+let haveCoupon = false;
 let total = 0, discount = 0, grand = 0;
+
+
+apply.addEventListener('click', () => {
+    coupon = couponCodeInpt.value.trim();
+    if (coupon.toUpperCase() === 'SELL20') {
+        haveCoupon = true;
+        if (total === 0) alert("Coupon code is applicable if you only buy the items")
+        else {
+            calculation(0, haveCoupon);
+            alert('Coupon applied successfully!');
+        }
+
+    } else {
+        haveCoupon = false;
+        alert('Invalid coupon code. Please try again.');
+    }
+    couponCodeInpt.value = '';
+});
+
+
 const createListItem = (name) => {
     const li = document.createElement('li');
     li.innerText = name;
@@ -16,39 +37,35 @@ const createListItem = (name) => {
 };
 
 
-
-
-
 const calculation = (price, haveCoupon) => {
-
-    price = parseFloat(price);
-    discount = parseFloat(discount);
-    total = parseFloat(total);
-    if (haveCoupon) discount += (total * 0.2);
+    price = parseFloat(price) || 0;
     total += price;
-    discount = discount.toFixed(2);
+
+    if (haveCoupon || total >= 200.0) {
+        discount = total * 0.2;
+    } else {
+        discount = 0;
+    }
+
     grand = total - discount;
 
 
     totalPrice.innerText = total.toFixed(2);
-    discountAmount.innerText = discount;
+    discountAmount.innerText = discount.toFixed(2);
     grandTotal.innerText = grand.toFixed(2);
 };
 
+
 items.addEventListener('click', (e) => {
     const card = e.target.closest('.card');
+
     if (card) {
         const name = card.querySelector('.name').innerText;
         const price = card.querySelector('.price').innerText;
 
         createListItem(name);
-        apply.addEventListener('click', () => {
-            coupon = couponCodeInpt.value;
-            if (coupon.toUpperCase() === 'SELL20')
-                calculation(price, true);
-
-        });
-        calculation(price, false)
+        calculation(price, haveCoupon);
+    } else {
+        return;
     }
-    else return;
 });
