@@ -65,7 +65,5 @@ items.addEventListener('click', (e) => {
 
         createListItem(name);
         calculation(price, haveCoupon);
-    } else {
-        return;
-    }
+    } 
 });
